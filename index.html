@@ -210,7 +210,7 @@ figure {
     font-weight: bold;
 }
 .highlight {
-    color: #01796F;
+    color: #D63385;
 }
 .flex-row {
     display: flex;
@@ -665,8 +665,8 @@ td:first-child {
         <meta property="og:description" content="Learning Flexible Forward Trajectories for Masked Molecular Diffusion"/>
         <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
         <link href="https://fonts.googleapis.com/css2?family=FontAwesome" rel="stylesheet">
-        <meta name="twitter:card" content="summary_large_image">
-        <meta name="twitter:creator" content="@haiyewon">
+        <meta name="twitter:card" content="assets/main_figure.png">
+        <meta name="twitter:creator" content="@hyunjinseo,@taewonkim">
         <meta name="twitter:title" content="Learning Flexible Forward Trajectories for Masked Molecular Diffusion">
     </head>
 
@@ -681,10 +681,10 @@ td:first-child {
         <div id="authors">
             
                 <div class="author-row">
-                    <a href="https://yewon-kim.com">Hyunjin Seo<sup>* 1</sup></a>,
-                    <a href="https://sites.google.com/site/wewantsj/">Taewon Kim<sup>*1</sup></a>,
-                    <a href="https://sites.google.com/site/wewantsj/">Sihyun Yu<sup>1</sup></a>,
-                    <a href="https://chrisdonahue.com/">Sungsoo Ahn<sup>1</sup></a>
+                    <a href="https://hyunjin72.github.io/">Hyunjin Seo<sup>* 1</sup></a>,
+                    <a>Taewon Kim<sup>*1</sup></a>,
+                    <a href="https://sihyun.me/">Sihyun Yu<sup>1</sup></a>,
+                    <a href="https://sites.google.com/view/sungsooahn0215">Sungsoo Ahn<sup>1</sup></a>
                 </div>
             
             <div class="affiliations">
@@ -697,14 +697,14 @@ td:first-child {
 
         <div id="resources">
             <div class="link-btn-parent">
-                <a class="link-btn" href="http://arxiv.org/abs/2412.18940">
+                <a class="link-btn" href="https://arxiv.org/abs/2505.16790">
                     <i class="fa-regular fa-file-lines"></i>
                     Paper
                 </a>   
-                <a class="link-btn" href="https://github.com/elianakim/Amuse">
+                <!-- <a class="link-btn" href="https://github.com/elianakim/Amuse">
                     <span class="fab fa-github"></span> 
                     Code
-                </a>           
+                </a>            -->
             </div>
         </div>
 
@@ -712,18 +712,18 @@ td:first-child {
             <!-- <h2>Overview</h2> -->
             <!-- <hr style="margin-top: 5px; margin-bottom: 20px;"> -->
             <blockquote>    
-                <i>We propose <b class="highlight">MELD</b>, a <b class="highlight">masked diffusion model geared for molecular generation</b>. 
-                    MELD resolves the <b class="highlight">state-clashing problem</b> through a <b class="highlight">learnable forward trajectory</b>, and shows robust performance in both <b class="highlight">conditional and unconditional generation</b>.</i>
+                    <i>We propose <b class="highlight">MELD</b>, a masked diffusion model geared for molecular generation. 
+                    MELD resolves the <b class="highlight">state-clashing problem</b> through a <b class="highlight">learnable forward trajectory</b>, and shows robust performance in both conditional and unconditional generation.</i>
             </blockquote> 
             
             <div id="fig-main-intro">
-                <img src="assets/main_figure.svg" alt="MELD Main Figure" style="width: 100%; margin-top: 20px; margin-bottom: 20px;">
+                <img src="assets/main_figure.gif" alt="MELD Main Figure" style="width: 100%; margin-top: 20px; margin-bottom: 20px;">
                 <div class="caption">
                     <strong>Figure 1:</strong> Overview of MELD (Masked Element-wise Learnable Diffusion). MELD addresses the state-clashing problem in masked diffusion models by learning flexible forward trajectories with element-specific corruption rates for atoms and bonds in molecular graphs.
                 </div>
             </div>
 
-            <div id="molecular-animations" style="margin-top: 30px; margin-bottom: 30px;">
+            <!-- <div id="molecular-animations" style="margin-top: 30px; margin-bottom: 30px;">
                 <div style="display: flex; justify-content: space-evenly; align-items: center; width: 100%;">
                     <img src="assets/non_transparent_molecules_1_10x_slower.gif" alt="Molecular Generation Animation 1" style="width: 40%; border-radius: 5px;">
                     <img src="assets/non_transparent_molecules_3_10x_slower.gif" alt="Molecular Generation Animation 2" style="width: 40%; border-radius: 5px;">
@@ -731,7 +731,7 @@ td:first-child {
                 <div class="caption">
                     <strong>Figure 2:</strong> Molecular generation process of MELD, upon two different polymers.
                 </div>
-            </div>
+            </div> -->
 
             
             
@@ -764,535 +764,72 @@ td:first-child {
                 To mitigate this, we propose Masked Element-wise Learnable Diffusion (MELD) that orchestrates per-element corruption trajectories to avoid collision between distinct molecular graphs. This is achieved through a parameterized noise scheduling network that assigns distinct corruption rates to individual graph elements, i.e., atoms and bonds. 
                 Extensive experiments on diverse molecular benchmarks reveal that MELD markedly enhances overall generation quality compared to element-agnostic noise scheduling, increasing the chemical validity of vanilla MDMs on ZINC250K from 15% to 93%. Furthermore, it achieves state-of-the-art property alignment in conditional generation tasks.
             </p>
+        </div>
 
-            <div id="fig-main">
-                <img src="assets/amuse_main.png" alt="">
+        <div id="observations">
+            <h2>Examination of the State-Clashing Problem</h2>
+            <hr style="margin-top: 5px; margin-bottom: 10px;">
+            <p class="textbox">
+                Formally, the training loss for the diffusion model can be expressed as the expected KL divergence: 
+                <code>&nbsp;E<sub>t</sub>[KL(p(g|g<sub>t</sub>) || p<sub>&theta;</sub>(g|g<sub>t</sub>))]</code>, 
+                where <code>p(g|g<sub>t</sub>) &prop; p(g<sub>t</sub>|g) p(g)</code>. Since many graphs <code>g</code> can map to the same intermediate state <code>g<sub>t</sub></code>, the true posterior <code>p(g|g<sub>t</sub>)</code> is often highly multimodal. 
+                However, the parameterized reverse distribution <code>p<sub>&theta;</sub>(g|g<sub>t</sub>)</code> is unimodal by construction, as it independently predicts each node and edge: 
+                <code>p<sub>&theta;</sub>(g|g<sub>t</sub>) = &prod;<sub>i</sub> p(x<sub>i</sub>|g<sub>t</sub>) &prod;<sub>i,j</sub> p(e<sub>ij</sub>|g<sub>t</sub>)</code>. 
+                This mismatch leads the model to spread its probability mass across multiple incompatible modes, often resulting in chemically invalid generations.
+                <br>
+                We visualize its effects when generating o-Phenylemediamene (row 1) and m-Phenylemediamene (row 2) from the same intermediate state, benzene ring.
+                Conversely, when reconstructing 4-Amino-2-chloro-5-fluoropyrimidine when only the chlorine bond is masked, the asymmetric structure suppresses the state-clashing problem,
+                leading to more confident predictions.
+            </p>
+
+            <div id="molecular-examples" style="margin-top: 30px; margin-bottom: 30px;">
+                <img src="assets/state_clashing_vis.png" alt="Entropy Comparison" style="width: 100%; border-radius: 5px;">
+                <div class="caption">
+                    <strong>Figure 2:</strong> Prediction entropy of edges during the reverse diffusion process.
+                </div>
             </div>
         </div>
 
-        <div id="songs">
-            <h2>Songs Created by the Participants</h2>
+        <div id="exapmles">
+            <h2>Examples Generated by MELD</h2>
             <hr style="margin-top: 5px; margin-bottom: 10px;">
             <p class="textbox">
-                We conducted a user study with 10 songwriters to evaluate Amuse's effectiveness in supporting songwriting with multimodal inspirations. 
-                Participants created 8-bar choruses for two prompts: their favorite summer holiday memory and the beginning of an unexpected friendship.
-                Each participant wrote two songs, one with Amuse's assistance and the other without. 
-                The following sound clips showcase the songs created by the participants.
-                For more details, please refer to Sections 7-8 of the <a href="https://arxiv.org/pdf/2412.18940"><u>paper</u></a>.
+                The following animations showcase the molecular generation process of MELD on different molecular structures. 
+                MELD's learnable forward trajectories enable effective generation of diverse molecular graphs by avoiding the state-clashing problem 
+                that affects standard masked diffusion models. Interestingly, we observe that nodes are generated first, followed by bonds, showing a clear hierarchy
+                during the generation process. For further details, please refer to the paper.
             </p>
 
-            <div class="carousel-container mt-4">
-                <!-- Navigation Controls -->
-                <div class="navigator mb-3">
-                    <button id="prevButton" disabled>&lt;</button>
-                    <select id="carouselSelector" class="form-select w-auto">
-                        <option value="0">P1</option>
-                        <option value="1">P2</option>
-                        <option value="2">P3</option>
-                        <option value="3">P4</option>
-                        <option value="4">P5</option>
-                        <option value="5">P6</option>
-                        <option value="6">P7</option>
-                        <option value="7">P8</option>
-                        <option value="8">P9</option>
-                        <option value="9">P10</option>
-                        <!-- Add more options as needed -->
-                    </select>
-                    <button id="nextButton">&gt;</button>
+            <div id="molecular-examples" style="margin-top: 30px; margin-bottom: 30px;">
+                <div style="display: flex; justify-content: space-evenly; align-items: center; width: 100%;">
+                    <img src="assets/non_transparent_molecules_1_10x_slower.gif" alt="Molecular Generation Animation 1" style="width: 40%; border-radius: 5px;">
+                    <img src="assets/non_transparent_molecules_3_10x_slower.gif" alt="Molecular Generation Animation 2" style="width: 40%; border-radius: 5px;">
                 </div>
+                <div class="caption">
+                    <strong>Figure 3:</strong> Examples of molecular generation process using MELD on different molecular structures.
+                </div>
+            </div>
+        </div>
+
         
-                <!-- Carousel -->
-                <div id="soundcloudCarousel" class="carousel slide" data-bs-ride="false">
-                    <div class="carousel-inner">
-                        <!-- P1 -->
-                        <div class="carousel-item active">
-                            <div class="text-center">
-                                <div class="mb-3">
-                                    <div class="song-container">
-                                        <div class="song-description">
-                                            <div class="label"><strong>Condition</strong></div>
-                                            <div class="value">Assist (use both Amuse and Aria)</div>
-                                            <div class="label"><strong>Prompt</strong></div>
-                                            <div class="value">Write an 8-bar chorus about your favorite summer holiday memory.</div>
-                                        </div>
-                                        <video controls width="100%">
-                                            <source src="assets/user-study-compositions/p1-assist.mp4" type="video/mp4">
-                                            Your browser does not support the video tag.
-                                        </video>
-                                    </div>                                    
-                                    
-                                    <div class="song-container">
-                                        <div class="song-description">
-                                            <div class="label"><strong>Condition</strong></div>
-                                            <div class="value">Baseline (use Aria only)</div>
-                                            <div class="label"><strong>Prompt</strong></div>
-                                            <div class="value">Write an 8-bar chorus about the beginning of an unexpected friendship you had in your life.</div>
-                                        </div>
-                                        <video controls width="100%">
-                                            <source src="assets/user-study-compositions/p1-baseline.mp4" type="video/mp4">
-                                            Your browser does not support the video tag.
-                                        </video>
-                                        <!-- <iframe width="100%" height="300" scrolling="no" frameborder="no" allow="autoplay" src="https://w.soundcloud.com/player/?url=https%3A//api.soundcloud.com/tracks/1989637263%3Fsecret_token%3Ds-KPd6JdbjNuu&color=%23e4dcd4&auto_play=false&hide_related=false&show_comments=true&show_user=true&show_reposts=false&show_teaser=true&visual=true"></iframe> -->
-                                    </div>   
-                                </div>
-                            </div>
-                        </div>
-                        <!-- P2 -->
-                        <div class="carousel-item">
-                            <div class="text-center">
-                                <div class="mb-3">
-                                    <div class="song-container">
-                                        <div class="song-description">
-                                            <div class="label"><strong>Condition</strong></div>
-                                            <div class="value">Assist (use both Amuse and Aria)</div>
-                                            <div class="label"><strong>Prompt</strong></div>
-                                            <div class="value">Write an 8-bar chorus about the beginning of an unexpected friendship you had in your life.</div>
-                                        </div>
-                                        <video controls width="100%">
-                                            <source src="assets/user-study-compositions/p2-assist.mp4" type="video/mp4">
-                                            Your browser does not support the video tag.
-                                        </video>
-                                        <!-- <iframe width="100%" height="300" scrolling="no" frameborder="no" allow="autoplay" src="https://w.soundcloud.com/player/?url=https%3A//api.soundcloud.com/tracks/1989637303%3Fsecret_token%3Ds-LSIZkTimYuS&color=%23e4dcd4&auto_play=false&hide_related=false&show_comments=true&show_user=true&show_reposts=false&show_teaser=true&visual=true"></iframe> -->
-                                    </div>                                    
-                                    
-                                    <div class="song-container">
-                                        <div class="song-description">
-                                            <div class="label"><strong>Condition</strong></div>
-                                            <div class="value">Baseline (use Aria only)</div>
-                                            <div class="label"><strong>Prompt</strong></div>
-                                            <div class="value">Write an 8-bar chorus about your favorite summer holiday memory.</div>
-                                        </div>
-                                        <video controls width="100%">
-                                            <source src="assets/user-study-compositions/p2-baseline.mp4" type="video/mp4">
-                                            Your browser does not support the video tag.
-                                        </video>
-                                        <!-- <iframe width="100%" height="300" scrolling="no" frameborder="no" allow="autoplay" src="https://w.soundcloud.com/player/?url=https%3A//api.soundcloud.com/tracks/1989637255%3Fsecret_token%3Ds-EWtxjRuhd7o&color=%23e4dcd4&auto_play=false&hide_related=false&show_comments=true&show_user=true&show_reposts=false&show_teaser=true&visual=true"></iframe> -->
-                                    </div>   
-                                </div>
-                            </div>
-                        </div>
-                        <!-- P3 -->
-                        <div class="carousel-item">
-                            <div class="text-center">
-                                <div class="mb-3">
-                                    <div class="song-container">
-                                        <div class="song-description">
-                                            <div class="label"><strong>Condition</strong></div>
-                                            <div class="value">Baseline (use Aria only)</div>
-                                            <div class="label"><strong>Prompt</strong></div>
-                                            <div class="value">Write an 8-bar chorus about the beginning of an unexpected friendship you had in your life.</div>
-                                        </div>
-                                        <video controls width="100%">
-                                            <source src="assets/user-study-compositions/p3-baseline.mp4" type="video/mp4">
-                                            Your browser does not support the video tag.
-                                        </video>
-                                        <!-- <iframe width="100%" height="300" scrolling="no" frameborder="no" allow="autoplay" src="https://w.soundcloud.com/player/?url=https%3A//api.soundcloud.com/tracks/1989637307%3Fsecret_token%3Ds-j3zEurodVnu&color=%23e4dcd4&auto_play=false&hide_related=false&show_comments=true&show_user=true&show_reposts=false&show_teaser=true&visual=true"></iframe> -->
-                                    </div>                                    
-                                    
-                                    <div class="song-container">
-                                        <div class="song-description">
-                                            <div class="label"><strong>Condition</strong></div>
-                                            <div class="value">Assist (use both Amuse and Aria)</div>
-                                            <div class="label"><strong>Prompt</strong></div>
-                                            <div class="value">Write an 8-bar chorus about your favorite summer holiday memory.</div>
-                                        </div>
-                                        <video controls width="100%">
-                                            <source src="assets/user-study-compositions/p3-assist.mp4" type="video/mp4">
-                                            Your browser does not support the video tag.
-                                        </video>
-                                        <!-- <iframe width="100%" height="300" scrolling="no" frameborder="no" allow="autoplay" src="https://w.soundcloud.com/player/?url=https%3A//api.soundcloud.com/tracks/1989637319%3Fsecret_token%3Ds-9lDkWcLTkoj&color=%23e4dcd4&auto_play=false&hide_related=false&show_comments=true&show_user=true&show_reposts=false&show_teaser=true&visual=true"></iframe> -->
-                                    </div>   
-                                </div>
-                            </div>
-                        </div>
-                        <!-- P4 -->
-                        <div class="carousel-item">
-                            <div class="text-center">
-                                <div class="mb-3">
-                                    <div class="song-container">
-                                        <div class="song-description">
-                                            <div class="label"><strong>Condition</strong></div>
-                                            <div class="value">Baseline (use Aria only)</div>
-                                            <div class="label"><strong>Prompt</strong></div>
-                                            <div class="value">Write an 8-bar chorus about the beginning of an unexpected friendship you had in your life.</div>
-                                        </div>
-                                        <video controls width="100%">
-                                            <source src="assets/user-study-compositions/p4-baseline.mp4" type="video/mp4">
-                                            Your browser does not support the video tag.
-                                        </video>
-                                        <!-- <iframe width="100%" height="300" scrolling="no" frameborder="no" allow="autoplay" src="https://w.soundcloud.com/player/?url=https%3A//api.soundcloud.com/tracks/1989664875%3Fsecret_token%3Ds-fYhO9eBJG9f&color=%23e4dcd4&auto_play=false&hide_related=false&show_comments=true&show_user=true&show_reposts=false&show_teaser=true&visual=true"></iframe> -->
-                                    </div>                                    
-                                    
-                                    <div class="song-container">
-                                        <div class="song-description">
-                                            <div class="label"><strong>Condition</strong></div>
-                                            <div class="value">Assist (use both Amuse and Aria)</div>
-                                            <div class="label"><strong>Prompt</strong></div>
-                                            <div class="value">Write an 8-bar chorus about your favorite summer holiday memory.</div>
-                                        </div>
-                                        <video controls width="100%">
-                                            <source src="assets/user-study-compositions/p4-assist.mp4" type="video/mp4">
-                                            Your browser does not support the video tag.
-                                        </video>
-                                        <!-- <iframe width="100%" height="300" scrolling="no" frameborder="no" allow="autoplay" src="https://w.soundcloud.com/player/?url=https%3A//api.soundcloud.com/tracks/1989637311%3Fsecret_token%3Ds-6ici3XAkuT0&color=%23e4dcd4&auto_play=false&hide_related=false&show_comments=true&show_user=true&show_reposts=false&show_teaser=true&visual=true"></iframe> -->
-                                    </div>   
-                                </div>
-                            </div>
-                        </div>
-                        <!-- P5 -->
-                        <div class="carousel-item">
-                            <div class="text-center">
-                                <div class="mb-3">
-                                    <div class="song-container">
-                                        <div class="song-description">
-                                            <div class="label"><strong>Condition</strong></div>
-                                            <div class="value">Baseline (use Aria only)</div>
-                                            <div class="label"><strong>Prompt</strong></div>
-                                            <div class="value">Write an 8-bar chorus about your favorite summer holiday memory.</div>
-                                        </div>
-                                        <video controls width="100%">
-                                            <source src="assets/user-study-compositions/p5-baseline.mp4" type="video/mp4">
-                                            Your browser does not support the video tag.
-                                        </video>
-                                        <!-- <iframe width="100%" height="300" scrolling="no" frameborder="no" allow="autoplay" src="https://w.soundcloud.com/player/?url=https%3A//api.soundcloud.com/tracks/1989637299%3Fsecret_token%3Ds-zPWQ02maYFU&color=%23e4dcd4&auto_play=false&hide_related=false&show_comments=true&show_user=true&show_reposts=false&show_teaser=true&visual=true"></iframe> -->
-                                    </div>                                    
-                                    
-                                    <div class="song-container">
-                                        <div class="song-description">
-                                            <div class="label"><strong>Condition</strong></div>
-                                            <div class="value">Assist (use both Amuse and Aria)</div>
-                                            <div class="label"><strong>Prompt</strong></div>
-                                            <div class="value">Write an 8-bar chorus about the beginning of an unexpected friendship you had in your life.</div>
-                                        </div>
-                                        <video controls width="100%">
-                                            <source src="assets/user-study-compositions/p5-assist.mp4" type="video/mp4">
-                                            Your browser does not support the video tag.
-                                        </video>
-                                        <!-- <iframe width="100%" height="300" scrolling="no" frameborder="no" allow="autoplay" src="https://w.soundcloud.com/player/?url=https%3A//api.soundcloud.com/tracks/1989637271%3Fsecret_token%3Ds-SpNPBMOxwHg&color=%23e4dcd4&auto_play=false&hide_related=false&show_comments=true&show_user=true&show_reposts=false&show_teaser=true&visual=true"></iframe> -->
-                                    </div>   
-                                </div>
-                            </div>
-                        </div>    
-                        <!-- P6 -->
-                        <div class="carousel-item">
-                            <div class="text-center">
-                                <div class="mb-3">
-                                    <div class="song-container">
-                                        <div class="song-description">
-                                            <div class="label"><strong>Condition</strong></div>
-                                            <div class="value">Baseline (use Aria only)</div>
-                                            <div class="label"><strong>Prompt</strong></div>
-                                            <div class="value">Write an 8-bar chorus about your favorite summer holiday memory.</div>
-                                        </div>
-                                        <video controls width="100%">
-                                            <source src="assets/user-study-compositions/p6-baseline.mp4" type="video/mp4">
-                                            Your browser does not support the video tag.
-                                        </video>
-                                        <!-- <iframe width="100%" height="300" scrolling="no" frameborder="no" allow="autoplay" src="https://w.soundcloud.com/player/?url=https%3A//api.soundcloud.com/tracks/1989637295%3Fsecret_token%3Ds-PJn9NUPnEkp&color=%23e4dcd4&auto_play=false&hide_related=false&show_comments=true&show_user=true&show_reposts=false&show_teaser=true&visual=true"></iframe> -->
-                                    </div>                                    
-                                    
-                                    <div class="song-container">
-                                        <div class="song-description">
-                                            <div class="label"><strong>Condition</strong></div>
-                                            <div class="value">Assist (use both Amuse and Aria)</div>
-                                            <div class="label"><strong>Prompt</strong></div>
-                                            <div class="value">Write an 8-bar chorus about the beginning of an unexpected friendship you had in your life.</div>
-                                        </div>
-                                        <video controls width="100%">
-                                            <source src="assets/user-study-compositions/p6-assist.mp4" type="video/mp4">
-                                            Your browser does not support the video tag.
-                                        </video>
-                                        <!-- <iframe width="100%" height="300" scrolling="no" frameborder="no" allow="autoplay" src="https://w.soundcloud.com/player/?url=https%3A//api.soundcloud.com/tracks/1989637267%3Fsecret_token%3Ds-oRB5olI3wXh&color=%23e4dcd4&auto_play=false&hide_related=false&show_comments=true&show_user=true&show_reposts=false&show_teaser=true&visual=true"></iframe> -->
-                                    </div>   
-                                </div>
-                            </div>
-                        </div>
-                        <!-- P7 -->
-                        <div class="carousel-item">
-                            <div class="text-center">
-                                <div class="mb-3">
-                                    <div class="song-container">
-                                        <div class="song-description">
-                                            <div class="label"><strong>Condition</strong></div>
-                                            <div class="value">Assist (use both Amuse and Aria)</div>
-                                            <div class="label"><strong>Prompt</strong></div>
-                                            <div class="value">Write an 8-bar chorus about the beginning of an unexpected friendship you had in your life.</div>
-                                        </div>
-                                        <video controls width="100%">
-                                            <source src="assets/user-study-compositions/p7-assist.mp4" type="video/mp4">
-                                            Your browser does not support the video tag.
-                                        </video>
-                                        <!-- <iframe width="100%" height="300" scrolling="no" frameborder="no" allow="autoplay" src="https://w.soundcloud.com/player/?url=https%3A//api.soundcloud.com/tracks/1989637259%3Fsecret_token%3Ds-Cq7LsbA2GGd&color=%23e4dcd4&auto_play=false&hide_related=false&show_comments=true&show_user=true&show_reposts=false&show_teaser=true&visual=true"></iframe> -->
-                                    </div>                                    
-                                    
-                                    <div class="song-container">
-                                        <div class="song-description">
-                                            <div class="label"><strong>Condition</strong></div>
-                                            <div class="value">Baseline (use Aria only)</div>
-                                            <div class="label"><strong>Prompt</strong></div>
-                                            <div class="value">Write an 8-bar chorus about your favorite summer holiday memory.</div>
-                                        </div>
-                                        <video controls width="100%">
-                                            <source src="assets/user-study-compositions/p7-baseline.mp4" type="video/mp4">
-                                            Your browser does not support the video tag.
-                                        </video>
-                                        <!-- <iframe width="100%" height="300" scrolling="no" frameborder="no" allow="autoplay" src="https://w.soundcloud.com/player/?url=https%3A//api.soundcloud.com/tracks/1989637275%3Fsecret_token%3Ds-J1ET2SctWhI&color=%23e4dcd4&auto_play=false&hide_related=false&show_comments=true&show_user=true&show_reposts=false&show_teaser=true&visual=true"></iframe> -->
-                                    </div>   
-                                </div>
-                            </div>
-                        </div>    
-                        <!-- P8 -->
-                        <div class="carousel-item">
-                            <div class="text-center">
-                                <div class="mb-3">
-                                    <div class="song-container">
-                                        <div class="song-description">
-                                            <div class="label"><strong>Condition</strong></div>
-                                            <div class="value">Assist (use both Amuse and Aria)</div>
-                                            <div class="label"><strong>Prompt</strong></div>
-                                            <div class="value">Write an 8-bar chorus about your favorite summer holiday memory.</div>
-                                        </div>
-                                        <video controls width="100%">
-                                            <source src="assets/user-study-compositions/p8-assist.mp4" type="video/mp4">
-                                            Your browser does not support the video tag.
-                                        </video>
-                                        <!-- <iframe width="100%" height="300" scrolling="no" frameborder="no" allow="autoplay" src="https://w.soundcloud.com/player/?url=https%3A//api.soundcloud.com/tracks/1989637283%3Fsecret_token%3Ds-OIMkZOoCo9h&color=%23e4dcd4&auto_play=false&hide_related=false&show_comments=true&show_user=true&show_reposts=false&show_teaser=true&visual=true"></iframe> -->
-                                    </div>                                    
-                                    
-                                    <div class="song-container">
-                                        <div class="song-description">
-                                            <div class="label"><strong>Condition</strong></div>
-                                            <div class="value">Baseline (use Aria only)</div>
-                                            <div class="label"><strong>Prompt</strong></div>
-                                            <div class="value">Write an 8-bar chorus about the beginning of an unexpected friendship you had in your life.</div>
-                                        </div>
-                                        <video controls width="100%">
-                                            <source src="assets/user-study-compositions/p8-baseline.mp4" type="video/mp4">
-                                            Your browser does not support the video tag.
-                                        </video>
-                                        <!-- <iframe width="100%" height="300" scrolling="no" frameborder="no" allow="autoplay" src="https://w.soundcloud.com/player/?url=https%3A//api.soundcloud.com/tracks/1989637315%3Fsecret_token%3Ds-JaFj0g3TlPZ&color=%23e4dcd4&auto_play=false&hide_related=false&show_comments=true&show_user=true&show_reposts=false&show_teaser=true&visual=true"></iframe> -->
-                                    </div>   
-                                </div>
-                            </div>
-                        </div>        
-                        <!-- P9 -->
-                        <div class="carousel-item">
-                            <div class="text-center">
-                                <div class="mb-3">
-                                    <div class="song-container">
-                                        <div class="song-description">
-                                            <div class="label"><strong>Condition</strong></div>
-                                            <div class="value">Baseline (use Aria only)</div>
-                                            <div class="label"><strong>Prompt</strong></div>
-                                            <div class="value">Write an 8-bar chorus about the beginning of an unexpected friendship you had in your life.</div>
-                                        </div>
-                                        <video controls width="100%">
-                                            <source src="assets/user-study-compositions/p9-baseline.mp4" type="video/mp4">
-                                            Your browser does not support the video tag.
-                                        </video>
-                                        <!-- <iframe width="100%" height="300" scrolling="no" frameborder="no" allow="autoplay" src="https://w.soundcloud.com/player/?url=https%3A//api.soundcloud.com/tracks/1989637323%3Fsecret_token%3Ds-3PAO8ifttPK&color=%23e4dcd4&auto_play=false&hide_related=false&show_comments=true&show_user=true&show_reposts=false&show_teaser=true&visual=true"></iframe> -->
-                                    </div>                                    
-                                    
-                                    <div class="song-container">
-                                        <div class="song-description">
-                                            <div class="label"><strong>Condition</strong></div>
-                                            <div class="value">Assist (use both Amuse and Aria)</div>
-                                            <div class="label"><strong>Prompt</strong></div>
-                                            <div class="value">Write an 8-bar chorus about your favorite summer holiday memory.</div>
-                                        </div>
-                                        <video controls width="100%">
-                                            <source src="assets/user-study-compositions/p9-assist.mp4" type="video/mp4">
-                                            Your browser does not support the video tag.
-                                        </video>
-                                        <!-- <iframe width="100%" height="300" scrolling="no" frameborder="no" allow="autoplay" src="https://w.soundcloud.com/player/?url=https%3A//api.soundcloud.com/tracks/1989637291%3Fsecret_token%3Ds-Qx770AyhIq0&color=%23e4dcd4&auto_play=false&hide_related=false&show_comments=true&show_user=true&show_reposts=false&show_teaser=true&visual=true"></iframe> -->
-                                    </div>   
-                                </div>
-                            </div>
-                        </div>        
-                        <!-- P10 -->
-                        <div class="carousel-item">
-                            <div class="text-center">
-                                <div class="mb-3">
-                                    <div class="song-container">
-                                        <div class="song-description">
-                                            <div class="label"><strong>Condition</strong></div>
-                                            <div class="value">Assist (use both Amuse and Aria)</div>
-                                            <div class="label"><strong>Prompt</strong></div>
-                                            <div class="value">Write an 8-bar chorus about your favorite summer holiday memory.</div>
-                                        </div>
-                                        <video controls width="100%">
-                                            <source src="assets/user-study-compositions/p10-assist.mp4" type="video/mp4">
-                                            Your browser does not support the video tag.
-                                        </video>
-                                        <!-- <iframe width="100%" height="300" scrolling="no" frameborder="no" allow="autoplay" src="https://w.soundcloud.com/player/?url=https%3A//api.soundcloud.com/tracks/1989637279%3Fsecret_token%3Ds-CxSStJp4yQl&color=%23e4dcd4&auto_play=false&hide_related=false&show_comments=true&show_user=true&show_reposts=false&show_teaser=true&visual=true"></iframe> -->
-                                    </div>                                    
-                                    
-                                    <div class="song-container">
-                                        <div class="song-description">
-                                            <div class="label"><strong>Condition</strong></div>
-                                            <div class="value">Baseline (use Aria only)</div>
-                                            <div class="label"><strong>Prompt</strong></div>
-                                            <div class="value">Write an 8-bar chorus about the beginning of an unexpected friendship you had in your life.</div>
-                                        </div>
-                                        <video controls width="100%">
-                                            <source src="assets/user-study-compositions/p10-baseline.mp4" type="video/mp4">
-                                            Your browser does not support the video tag.
-                                        </video>
-                                        <!-- <iframe width="100%" height="300" scrolling="no" frameborder="no" allow="autoplay" src="https://w.soundcloud.com/player/?url=https%3A//api.soundcloud.com/tracks/1989637251%3Fsecret_token%3Ds-36NBUqMswNK&color=%23e4dcd4&auto_play=false&hide_related=false&show_comments=true&show_user=true&show_reposts=false&show_teaser=true&visual=true"></iframe> -->
-                                    </div>   
-                                </div>
-                            </div>
-                        </div>        
-                    </div>
-                </div>
-            </div>     
-            <div style="height: 10px;"></div>   
-        </div>
-
-        <div id="listening-study">
-            <h2>Listening Study Audio Samples</h2>
-            <hr style="margin-top: 5px; margin-bottom: 10px;">
-            We conducted a listening study to assess the musical coherence and keyword relevance of chord progressions generated by our rejection sampling-based chord generation method. 
-            Participants evaluated pairs of chord progressions, with each pair generated by two of the following methods: LSTM Prior, GPT-4o, and Amuse (Ours).
-            We list the selected audio samples used for the listening study. 
-            Further details can be found in Section 6.2 of the <a href="https://arxiv.org/pdf/2412.18940"><u>paper</u></a>.
-            <div style="height: 5px;"></div>
-            <h3>Musical Coherence</h3>
-            <table>
-                
-                <colgroup>
-                    <col class="index-col">
-                    <col class="coherence-audio-col">
-                    <col class="coherence-audio-col">
-                    <col class="coherence-audio-col">
-                </colgroup>
-                <thead>
-                    <tr>
-                        <th></th>
-                        <th>LSTM Prior</th>
-                        <th>GPT-4o</th>
-                        <th>Amuse (Ours)</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>1</td>
-                        <td><audio class="audio-player" controls src="assets/listening-study-audio-files/musical-1-lstm.wav"></audio></td>
-                        <td><audio class="audio-player" controls src="assets/listening-study-audio-files/musical-1-gpt4o.wav"></audio></td>
-                        <td><audio class="audio-player" controls src="assets/listening-study-audio-files/musical-1-amuse.wav"></audio></td>
-                    </tr>
-                    <tr>
-                        <td>2</td>
-                        <td><audio class="audio-player" controls src="assets/listening-study-audio-files/musical-2-lstm.wav"></audio></td>
-                        <td><audio class="audio-player" controls src="assets/listening-study-audio-files/musical-2-gpt4o.wav"></audio></td>
-                        <td><audio class="audio-player" controls src="assets/listening-study-audio-files/musical-2-amuse.wav"></audio></td>
-                    </tr>
-                    <tr>
-                        <td>3</td>
-                        <td><audio class="audio-player" controls src="assets/listening-study-audio-files/musical-3-lstm.wav"></audio></td>
-                        <td><audio class="audio-player" controls src="assets/listening-study-audio-files/musical-3-gpt4o.wav"></audio></td>
-                        <td><audio class="audio-player" controls src="assets/listening-study-audio-files/musical-3-amuse.wav"></audio></td>
-                    </tr>
-                    <tr>
-                        <td>4</td>
-                        <td><audio class="audio-player" controls src="assets/listening-study-audio-files/musical-4-lstm.wav"></audio></td>
-                        <td><audio class="audio-player" controls src="assets/listening-study-audio-files/musical-4-gpt4o.wav"></audio></td>
-                        <td><audio class="audio-player" controls src="assets/listening-study-audio-files/musical-4-amuse.wav"></audio></td>
-                    </tr>
-                    <tr>
-                        <td>5</td>
-                        <td><audio class="audio-player" controls src="assets/listening-study-audio-files/musical-5-lstm.wav"></audio></td>
-                        <td><audio class="audio-player" controls src="assets/listening-study-audio-files/musical-5-gpt4o.wav"></audio></td>
-                        <td><audio class="audio-player" controls src="assets/listening-study-audio-files/musical-5-amuse.wav"></audio></td>
-                    </tr>
-                </tbody>
-            </table>
-
-            <div style="height: 15px;"></div>
-            <h3>Keyword Relevance</h3>
-            <table>
-                
-                <colgroup>
-                    <!-- <col class="index-col"> -->
-                    <col class="relevance-keywords-col">
-                    <col class="relevance-audio-col">
-                    <col class="relevance-audio-col">
-                    <col class="relevance-audio-col">
-                </colgroup>
-                <thead>
-                    <tr>
-                        <!-- <th></th> -->
-                        <th>Keywords</th>
-                        <th>LSTM Prior</th>
-                        <th>GPT-4o</th>
-                        <th>Amuse (Ours)</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <!-- <td>1</td> -->
-                        <td>energetic, dance pop, disco</td>
-                        <td><audio class="audio-player" controls src="assets/listening-study-audio-files/keyword-1-lstm.wav"></audio></td>
-                        <td><audio class="audio-player" controls src="assets/listening-study-audio-files/keyword-1-gpt4o.wav"></audio></td>
-                        <td><audio class="audio-player" controls src="assets/listening-study-audio-files/keyword-1-amuse.wav"></audio></td>
-                    </tr>
-                    <tr>
-                        <!-- <td>2</td> -->
-                        <td>acoustic, folk, country</td>
-                        <td><audio class="audio-player" controls src="assets/listening-study-audio-files/keyword-2-lstm.wav"></audio></td>
-                        <td><audio class="audio-player" controls src="assets/listening-study-audio-files/keyword-2-gpt4o.wav"></audio></td>
-                        <td><audio class="audio-player" controls src="assets/listening-study-audio-files/keyword-2-amuse.wav"></audio></td>
-                    </tr>
-                    <tr>
-                        <!-- <td>3</td> -->
-                        <td>smooth, jazz, swing</td>
-                        <td><audio class="audio-player" controls src="assets/listening-study-audio-files/keyword-3-lstm.wav"></audio></td>
-                        <td><audio class="audio-player" controls src="assets/listening-study-audio-files/keyword-3-gpt4o.wav"></audio></td>
-                        <td><audio class="audio-player" controls src="assets/listening-study-audio-files/keyword-3-amuse.wav"></audio></td>
-                    </tr>
-                    <tr>
-                        <!-- <td>4</td> -->
-                        <td>bossa nova, latin jazz, samba</td>
-                        <td><audio class="audio-player" controls src="assets/listening-study-audio-files/keyword-4-lstm.wav"></audio></td>
-                        <td><audio class="audio-player" controls src="assets/listening-study-audio-files/keyword-4-gpt4o.wav"></audio></td>
-                        <td><audio class="audio-player" controls src="assets/listening-study-audio-files/keyword-4-amuse.wav"></audio></td>
-                    </tr>
-                    <tr>
-                        <!-- <td>5</td> -->
-                        <td>emotional, ballad, sad</td>
-                        <td><audio class="audio-player" controls src="assets/listening-study-audio-files/keyword-5-lstm.wav"></audio></td>
-                        <td><audio class="audio-player" controls src="assets/listening-study-audio-files/keyword-5-gpt4o.wav"></audio></td>
-                        <td><audio class="audio-player" controls src="assets/listening-study-audio-files/keyword-5-amuse.wav"></audio></td>
-                    </tr>
-                </tbody>
-            </table>
-            <div style="height: 30px;"></div>
-        </div>
 
         <div id="bibtex">
             <h2>Citation</h2>
             <hr style="margin-top: 5px; margin-bottom: 10px;">
-            <pre><code>@inproceedings{kim2025amuse,
-    author = {Kim, Yewon and Lee, Sung-Ju and Donahue, Chris},
-    title = {Learning Flexible Forward Trajectories for Masked Molecular Diffusion},
-    year = {2025},
-    isbn = {9798400713941},
-    publisher = {Association for Computing Machinery},
-    address = {New York, NY, USA},
-    url = {https://doi.org/10.1145/3706598.3713818},
-    doi = {10.1145/3706598.3713818},
-    booktitle = {Proceedings of the 2025 CHI Conference on Human Factors in Computing Systems},
-    articleno = {187},
-    numpages = {28},
-    keywords = {Creativity Support Tool, Music, Songwriting, Human-AI Interaction, Machine Learning},
-    location = {Yokohama, Japan},
-    series = {CHI '25}
+            <pre><code>@misc{seo2025learningflexibleforwardtrajectories,
+    title={Learning Flexible Forward Trajectories for Masked Molecular Diffusion}, 
+    author={Hyunjin Seo and Taewon Kim and Sihyun Yu and SungSoo Ahn},
+    year={2025},
+    eprint={2505.16790},
+    archivePrefix={arXiv},
+    primaryClass={cs.LG},
+    url={https://arxiv.org/abs/2505.16790}
 }</code></pre>
         </div>
     </div>
     <footer style="text-align: center; padding-bottom: 20px; font-size: 14px; color: #666;">
-        Original template by <a href="https://sihyun.me" target="_blank" style="color: #01796F; text-decoration: none;">Sihyun Yu</a> 
-        and modified by <a href="https://yewon-kim.com" target="_blank" style="color: #01796F; text-decoration: none;">Yewon Kim</a> <i class="fa-solid fa-music"></i>
+        Original template by <a href="https://yewon-kim.com" target="_blank" style="color: #01796F; text-decoration: none;">Yewon Kim</a>
+        and modified by  Taewon Kim
     </footer>
     
 
